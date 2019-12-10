@@ -1,337 +1,385 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Document</title>
-</head>
+  <body>
+    <script>
+      // 栈：先入后出 last in first out
+      class Stack {
+        constructor(items = []) {
+          this.items = items;
+        }
 
-<body>
-  <script>
-    // 栈：先入后出 last in first out
-    class Stack {
-      constructor(items = []) {
-        this.items = items;
+        push(element) {
+          this.items.push(element);
+        }
+
+        pop() {
+          return this.items.pop();
+        }
+
+        get peek() {
+          return this.items[this.items.length - 1];
+        }
+
+        get isEmpty() {
+          return !this.items.length;
+        }
+
+        get size() {
+          return this.items.length;
+        }
+
+        clear() {
+          this.items = [];
+        }
+
+        print() {
+          console.log(this.items.toString());
+        }
       }
 
-      push(element) {
-        this.items.push(element);
+      // 队列：先入先出
+      class Queue {
+        constructor(items = []) {
+          this.items = items;
+        }
+
+        enqueue(element) {
+          this.items.push(element);
+        }
+
+        dequeue() {
+          return this.items.shift();
+        }
+
+        get front() {
+          return this.items[0];
+        }
+
+        get size() {
+          return this.items.length;
+        }
+
+        get isEmpty() {
+          return !this.items.length;
+        }
+
+        clear() {
+          this.items = [];
+        }
+
+        print() {
+          console.log(this.items.toString());
+        }
       }
 
-      pop() {
-        return this.items.pop();
-      }
+      // 优先队列：先入先出,在正确的优先位置添加元素，然后按照优先级移除它们
+      class PriorityQueue {
+        constructor() {
+          this.items = [];
+        }
 
-      get peek() {
-        return this.items[this.items.length - 1];
-      }
-
-      get isEmpty() {
-        return !this.items.length;
-      }
-
-      get size() {
-        return this.items.length;
-      }
-
-      clear() {
-        this.items = [];
-      }
-
-      print() {
-        console.log(this.items.toString());
-      }
-    }
-
-    // 队列：先入先出
-    class Queue {
-      constructor(items = []) {
-        this.items = items;
-      }
-
-      enqueue(element) {
-        this.items.push(element);
-      }
-
-      dequeue() {
-        return this.items.shift();
-      }
-
-      get front() {
-        return this.items[0];
-      }
-
-      get size() {
-        return this.items.length;
-      }
-
-      get isEmpty() {
-        return !this.items.length;
-      }
-
-      clear() {
-        this.items = [];
-      }
-
-      print() {
-        console.log(this.items.toString());
-      }
-    }
-
-    // 优先队列：先入先出,在正确的优先位置添加元素，然后按照优先级移除它们
-    class PriorityQueue {
-      constructor() {
-        this.items = [];
-      }
-
-      enqueue(element, priority = 1) {
-        const queueElement = { element, priority };
-        if (this.isEmpty) {
-          this.items.push(queueElement);
-        } else {
-          const preIndex = this.items.findIndex(
-            item => queueElement.priority < item.priority
-          );
-          if (preIndex > -1) {
-            this.items.splice(preIndex, 0, queueElement);
-          } else {
+        enqueue(element, priority = 1) {
+          const queueElement = { element, priority };
+          if (this.isEmpty) {
             this.items.push(queueElement);
+          } else {
+            const preIndex = this.items.findIndex(
+              item => queueElement.priority < item.priority
+            );
+            if (preIndex > -1) {
+              this.items.splice(preIndex, 0, queueElement);
+            } else {
+              this.items.push(queueElement);
+            }
           }
         }
-      }
 
-      dequeue() {
-        return this.items.shift();
-      }
-
-      get isEmpty() {
-        return !this.items.length;
-      }
-
-      get front() {
-        return this.items[0];
-      }
-
-      get size() {
-        return this.items.length;
-      }
-
-      clear() {
-        this.items = [];
-      }
-
-      print() {
-        console.log(this.items);
-      }
-    }
-
-    // 循环队列
-    class LoopQueue extends Queue {
-      constructor(items = []) {
-        super(items);
-      }
-
-      getIndex(index) {
-        const length = this.items.length;
-        return index >= length ? index % length : index;
-      }
-
-      find(index) {
-        return !this.isEmpty ? this.items[this.getIndex(index)] : null;
-      }
-    }
-
-    // 链表，火车，一节接一节，无序存储，每个节点保存当前数据和下一节点指针
-    class LinkedList {
-      static Node = class Node {
-        constructor(element) {
-          this.element = element;
-          this.next = null;
+        dequeue() {
+          return this.items.shift();
         }
-      };
 
-      constructor() {
-        // 火车头
-        this.head = null;
-        // 长度
-        this.length = 0;
+        get isEmpty() {
+          return !this.items.length;
+        }
+
+        get front() {
+          return this.items[0];
+        }
+
+        get size() {
+          return this.items.length;
+        }
+
+        clear() {
+          this.items = [];
+        }
+
+        print() {
+          console.log(this.items);
+        }
       }
 
-      append(element) {
-        const node = new LinkedList.Node(element);
-        let current = null;
-        if (this.head === null) {
-          this.head = node;
-        } else {
-          current = this.head;
-          while (current.next) {
-            current = current.next;
+      // 循环队列
+      class LoopQueue extends Queue {
+        constructor(items = []) {
+          super(items);
+        }
+
+        getIndex(index) {
+          const length = this.items.length;
+          return index >= length ? index % length : index;
+        }
+
+        find(index) {
+          return !this.isEmpty ? this.items[this.getIndex(index)] : null;
+        }
+      }
+
+      // 链表，火车，一节接一节，无序存储，每个节点保存当前数据和下一节点指针
+      class LinkedList {
+        static Node = class Node {
+          constructor(element) {
+            this.element = element;
+            this.next = null;
           }
-          current.next = node;
-        }
-        this.length++;
-      }
+        };
 
-      insert(pos, element) {
-        if (pos >= 0 && pos <= this.length) {
+        constructor() {
+          // 火车头
+          this.head = null;
+          // 长度
+          this.length = 0;
+        }
+
+        append(element) {
           const node = new LinkedList.Node(element);
-          let current = this.head;
-          let index = 0;
-          let previous = null;
-          if (pos === 0) {
-            node.next = current;
+          let current = null;
+          if (this.head === null) {
             this.head = node;
           } else {
-            while (index++ < pos) {
-              previous = current;
+            current = this.head;
+            while (current.next) {
               current = current.next;
             }
-            node.next = current;
-            previous.next = node;
+            current.next = node;
           }
           this.length++;
-          return true;
         }
-        return false;
-      }
 
-      removeAt(pos) {
-        if (pos > -1 && pos < this.length) {
-          let index = 0;
-          let current = this.head;
-          let previous = null;
-          if (pos === 0) {
-            this.head = current.next;
-          } else {
-            while (index++ < pos) {
-              previous = current;
-              current = current.next;
+        insert(pos, element) {
+          if (pos >= 0 && pos <= this.length) {
+            const node = new LinkedList.Node(element);
+            let current = this.head;
+            let index = 0;
+            let previous = null;
+            if (pos === 0) {
+              node.next = current;
+              this.head = node;
+            } else {
+              while (index++ < pos) {
+                previous = current;
+                current = current.next;
+              }
+              node.next = current;
+              previous.next = node;
             }
-            previous.next = current.next;
+            this.length++;
+            return true;
           }
-          this.length--;
-          return current.element;
+          return false;
         }
-        return null;
-      }
-      findIndex(element) {
-        let current = this.head;
-        let index = -1;
-        while (current) {
-          if (element === current.element) {
-            return index + 1;
+
+        removeAt(pos) {
+          if (pos > -1 && pos < this.length) {
+            let index = 0;
+            let current = this.head;
+            let previous = null;
+            if (pos === 0) {
+              this.head = current.next;
+            } else {
+              while (index++ < pos) {
+                previous = current;
+                current = current.next;
+              }
+              previous.next = current.next;
+            }
+            this.length--;
+            return current.element;
           }
-          index++;
-          current = current.next;
+          return null;
         }
-        return -1;
-      }
-
-      remove(element) {
-        const index = this.findIndex(element);
-        return this.removeAt(index);
-      }
-
-      toString() {
-        let current = this.head;
-        let string = "";
-        while (current) {
-          string += ` ${current.element}`;
-          current = current.next;
-        }
-        return string;
-      }
-
-      get isEmpty() {
-        return !this.length;
-      }
-
-      get size() {
-        return this.length;
-      }
-    }
-    // 双向链表,保存前一项
-    class DoublyLinkList {
-      static Node = class Node {
-        constructor(element) {
-          this.element = element;
-          this.prev = null;
-          this.next = null;
-        }
-      };
-      constructor() {
-        this.head = null;
-        this.tail = null;
-        this.length = 0;
-      }
-      append(element) {
-        const node = new DoublyLinkList.Node(element);
-        let current = this.head;
-        if (current === null) {
-          this.head = node;
-          this.tail = node;
-        } else {
-          while (current.next !== null) {
+        findIndex(element) {
+          let current = this.head;
+          let index = -1;
+          while (current) {
+            if (element === current.element) {
+              return index + 1;
+            }
+            index++;
             current = current.next;
           }
-          node.prev = current;
-          current.next = node;
+          return -1;
         }
-        this.length++;
+
+        remove(element) {
+          const index = this.findIndex(element);
+          return this.removeAt(index);
+        }
+
+        toString() {
+          let current = this.head;
+          let string = "";
+          while (current) {
+            string += ` ${current.element}`;
+            current = current.next;
+          }
+          return string;
+        }
+
+        get isEmpty() {
+          return !this.length;
+        }
+
+        get size() {
+          return this.length;
+        }
       }
-      insert(pos, element) {
-        const node = new DoublyLinkList.Node(element);
-        let current = this.head;
-        let previous = null;
-        let index = 0;
-        if (pos > -1 && pos <= this.length) {
-          if (pos === 0) {
-            current.prev = node;
-            node.next = current;
+      // 双向链表,保存前一项
+      class DoublyLinkList {
+        static Node = class Node {
+          constructor(element) {
+            this.element = element;
+            this.prev = null;
+            this.next = null;
+          }
+        };
+        constructor() {
+          this.head = null;
+          this.tail = null;
+          this.length = 0;
+        }
+        append(element) {
+          const node = new DoublyLinkList.Node(element);
+          let current = this.head;
+          if (current === null) {
             this.head = node;
-          } else if (pos === this.length) {
-            node.prev = this.tail;
-            this.tail.next = node;
           } else {
-            while (index++ < pos) {
-              previous = current;
+            while (current.next !== null) {
               current = current.next;
             }
-            node.prev = previous;
-            node.next = current;
-            previous.next = node;
-            current.prev = node;
+            node.prev = current;
+            current.next = node;
           }
-          if (!node.next) {
-            this.tail = node;
-          }
+          this.tail = node;
           this.length++;
-          return true;
         }
-        return false;
-      }
-      removeAt(pos) {
-        if (pos >= 0 && pos < this.length) {
+        insert(pos, element) {
+          const node = new DoublyLinkList.Node(element);
           let current = this.head;
+          let previous = null;
           let index = 0;
-          if (pos === 0) {
-            this.head = current.next;
-            this.head && (this.head.prev = null);
-            if (!this.head) {
-              this.tail = null;
+          if (pos > -1 && pos <= this.length) {
+            if (pos === 0) {
+              current.prev = node;
+              node.next = current;
+              this.head = node;
+            } else if (pos === this.length) {
+              node.prev = this.tail;
+              this.tail.next = node;
+            } else {
+              while (index++ < pos) {
+                previous = current;
+                current = current.next;
+              }
+              node.prev = previous;
+              node.next = current;
+              previous.next = node;
+              current.prev = node;
             }
-          } else if (pos === this.length - 1) {
-
+            if (!node.next) {
+              this.tail = node;
+            }
+            this.length++;
+            return true;
           }
-          this.length--;
-          return current.element;
+          return false;
         }
-        return null;
-      }
-    }
-  </script>
-</body>
+        removeAt(pos) {
+          if (pos >= 0 && pos < this.length) {
+            let current = this.head;
+            let previous = null;
+            let index = 0;
+            if (pos === 0) {
+              this.head = current.next;
+              this.head && (this.head.prev = null);
+              if (!this.head) {
+                this.tail = null;
+              }
+            } else if (pos === this.length - 1) {
+              current = this.tail;
+              this.tail = current.prev;
+              this.tail.next = null;
+            } else {
+              debugger;
+              while (index++ < pos) {
+                previous = current;
+                current = current.next;
+              }
+              previous.next = current.next;
+              current.next.prev = previous;
+            }
+            this.length--;
+            return current.element;
+          }
+          return null;
+        }
 
+        findIndex(element) {
+          // 如果是基础类型，而且是有重复元素的，会出现问题，不过如果用引用类型就不会有问题
+          let current = this.head;
+          let index = -1;
+          if (!this.isEmpty) {
+            while (current) {
+              if (element === current.element) {
+                return index + 1;
+              }
+              index++;
+              current = current.next;
+            }
+          }
+          return -1;
+        }
+
+        remove(element) {
+          const index = this.findIndex(element);
+          return this.removeAt(index);
+        }
+
+        toString() {
+          let current = this.head;
+          let str = "";
+          while (current) {
+            str += ` ${current.element}`;
+            current = current.next;
+          }
+          return str;
+        }
+
+        get isEmpty() {
+          return !this.length;
+        }
+
+        get size() {
+          return this.length;
+        }
+      }
+    </script>
+  </body>
 </html>
