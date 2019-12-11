@@ -380,6 +380,78 @@
           return this.length;
         }
       }
+      // 集合，es6中实现是Set
+      class Cset {
+        constructor() {
+          this.items = {};
+        }
+
+        has(value) {
+          return this.items.hasOwnProperty(value);
+        }
+
+        add(value) {
+          if (!this.has(value)) {
+            this.items[value] = value;
+            return true;
+          }
+          return false;
+        }
+
+        remove(value) {
+          if (this.has(value)) {
+            delete this.items[value];
+            return true;
+          }
+          return false;
+        }
+
+        get size() {
+          return Object.keys(this.items).length;
+        }
+
+        get values() {
+          return Object.keys(this.items);
+        }
+      }
+
+      // 字典
+      class Dictionary {
+        constructor() {
+          this.items = {};
+        }
+
+        set(key, value) {
+          this.items[key] = value;
+        }
+
+        get(key) {
+          return this.items[key];
+        }
+
+        remove(key) {
+          delete this.items[key];
+        }
+
+        get keys() {
+          return Object.keys(this.items);
+        }
+
+        get values() {
+          /**
+          Array.prototype.reduce
+          @param callback (total:any{初始值，或者返回值},val:any{枚举值},index:number{下标},arr:any[]{被枚举的数组})
+          @param initialVal total的默认值
+          **/
+          return Object.keys(this.items).reduce((total, key) => {
+            total.push(this.items[key]);
+            return total;
+          }, []);
+        }
+      }
+
+      // 散列，hashTable、hashMap类 是Dictionary类的一种散列表实现方式
+      class HashTable {}
     </script>
   </body>
 </html>
