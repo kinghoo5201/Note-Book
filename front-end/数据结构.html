@@ -543,6 +543,55 @@
           }
         };
 
+        static getMinNode = function getMinNode(node) {
+          if (node === null) {
+            return null;
+          }
+          let current = node;
+          while (current.left) {
+            current = current.left;
+          }
+          return current;
+        };
+
+        static getMaxNode = function getMaxNode(node) {
+          if (node === null) {
+            return null;
+          }
+          let current = node;
+          while (current.right) {
+            current = current.right;
+          }
+          return current;
+        };
+
+        static removeNode = function removeNode(node, key) {
+          if (node === null) {
+            return null;
+          }
+          if (node.key === key) {
+            if (node.left === null && node.right === null) {
+              return null;
+            }
+            if (node.left === null) {
+              return node.right;
+            }
+            if (node.right === null) {
+              return node.left;
+            }
+            const tempNode = BinarySearchTree.getMinNode(node.right);
+            node.key = tempNode.key;
+            node.right = removeNode(node.right, tempNode.key);
+          } else {
+            if (node.key > key) {
+              node.left = removeNode(node.left, key);
+            } else {
+              node.right = removeNode(node.right, key);
+            }
+          }
+          return node;
+        };
+
         constructor(data) {
           this.root = null;
           if (data) {
@@ -580,19 +629,7 @@
         }
 
         remove(key) {
-          let parent = null;
-          const removeNode = (node, key) => {
-            if (node === null) {
-              return false;
-            }
-            if (node.key === key) {
-              //
-            } else {
-              parent = node;
-              return removeNode(node.key > key ? node.left : node.right, key);
-            }
-          };
-          return removeNode(this.root, key);
+          this.root = BinarySearchTree.removeNode(this.root, key);
         }
 
         // 中序遍历，一种上行顺序访问bst所有节点的方式，从最到最大的顺序访问
@@ -649,17 +686,11 @@
 
         // 最小值
         get min() {
-          const getMin = node => {
-            return node ? (node.left ? getMin(node.left) : node.key) : null;
-          };
-          return getMin(this.root);
+          return BinarySearchTree.getMinNode(this.root).key;
         }
         // 最大值
         get max() {
-          const getMax = node => {
-            return node ? (node.right ? getMax(node.right) : node.key) : null;
-          };
-          return getMax(this.root);
+          return BinarySearchTree.getMaxNode(this.root).key;
         }
       }
     </script>
