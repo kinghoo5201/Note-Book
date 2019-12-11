@@ -380,6 +380,7 @@
           return this.length;
         }
       }
+
       // 集合，es6中实现是Set
       class Cset {
         constructor() {
@@ -439,10 +440,10 @@
 
         get values() {
           /**
-          Array.prototype.reduce
-          @param callback (total:any{初始值，或者返回值},val:any{枚举值},index:number{下标},arr:any[]{被枚举的数组})
-          @param initialVal total的默认值
-          **/
+              Array.prototype.reduce
+              @param callback (total:any{初始值，或者返回值},val:any{枚举值},index:number{下标},arr:any[]{被枚举的数组})
+              @param initialVal total的默认值
+              **/
           return Object.keys(this.items).reduce((total, key) => {
             total.push(this.items[key]);
             return total;
@@ -450,8 +451,45 @@
         }
       }
 
-      // 散列，hashTable、hashMap类 是Dictionary类的一种散列表实现方式
-      class HashTable {}
+      // 分链散列:应对产生hash值碰撞问题
+      class HashTable {
+        static getHash = function(key) {
+          // 会出现charCode和碰撞问题，用链表将其分离
+          let total = 0;
+          for (const charset of key) {
+            total += charset.charCodeAt();
+          }
+          return total % 37;
+        };
+        constructor() {
+          this.items = [];
+        }
+
+        put(key, value) {
+          const position = HashMap.getHash(key);
+          if (this.items[position] === undefined) {
+            this.items[position] = new LinkedList();
+          }
+          this.items[position].append({ key, value });
+        }
+
+        get(key) {
+          const position = HashMap.getHash(key);
+          if (!this.items[position]) {
+            return null;
+          }
+          const getVal = (node = new LinkedList.Node()) => {
+            if (!node) {
+              return null;
+            }
+            if (Object.is(node.element.key, key)) {
+              return node.element.value;
+            }
+            return getVal(node.next);
+          };
+          return getVal(this.items[position].head);
+        }
+      }
     </script>
   </body>
 </html>
