@@ -453,6 +453,7 @@
 
       // 分链散列:应对产生hash值碰撞问题
       class HashTable {
+        /** lose lose 散列函数，会存在hash值冲突，需要用分链或者线性查找的方式解决冲突 */
         static getHash = function(key) {
           // 会出现charCode和碰撞问题，用链表将其分离
           let total = 0;
@@ -461,12 +462,22 @@
           }
           return total % 37;
         };
+
+        /** djb2散列函数生成的hash值可以解决散列表的编码冲突问题，可以不再使用分链，提高查找性能 */
+        static djb2HashCode(key) {
+          let hash = 5381;
+          for (let code of key) {
+            hash = hash * 33 + code.charCodeAt();
+          }
+          return hash % 1013;
+        }
+
         constructor() {
           this.items = [];
         }
 
         put(key, value) {
-          const position = HashMap.getHash(key);
+          const position = HashTable.getHash(key);
           if (this.items[position] === undefined) {
             this.items[position] = new LinkedList();
           }
@@ -474,8 +485,8 @@
         }
 
         get(key) {
-          const position = HashMap.getHash(key);
-          if (!this.items[position]) {
+          const position = HashTable.getHash(key);
+          if (this.items[position] === undefined) {
             return null;
           }
           const getVal = (node = new LinkedList.Node()) => {
@@ -488,6 +499,146 @@
             return getVal(node.next);
           };
           return getVal(this.items[position].head);
+        }
+
+        remove(key) {
+          const position = HashTable.getHash(key);
+          if (this.items[position] === undefined) {
+            return false;
+          }
+          const removeElement = node => {
+            if (!node) {
+              return false;
+            }
+            if (Object.is(node.element.key, key)) {
+              this.item[position].remove(node.element);
+              if (this.items[position].isEmpty) {
+                this.items[position] = undefined;
+              }
+              return true;
+            }
+            return removeElement(node.next);
+          };
+          return removeElement(this.items[position]);
+        }
+      }
+
+      /**
+      散列表线性查找，如果hash值已经被占用，则hash值+1，以此类推
+      */
+
+      /** 树：节点（键）
+      根节点
+      内部节点：有父节点和子节点的节点
+      外部节点/叶子节点：无子节点的节点
+       */
+
+      /** 二叉搜索树（BST） ，左侧节点存储小的值，右侧节点存储大的值，根键的值越接近中点，查找性能越高！ */
+      class BinarySearchTree {
+        static Node = class Node {
+          constructor(key) {
+            this.key = key;
+            this.left = null;
+            this.right = null;
+          }
+        };
+
+        constructor() {
+          this.root = null;
+        }
+
+        insert(key) {
+          const newNode = new BinarySearchTree.Node(key);
+          const insertNode = (node, newNode) => {
+            if (newNode.key === node.key) {
+              return;
+            }
+            if (newNode.key < node.key) {
+              if (node.left === null) {
+                node.left = newNode;
+              } else {
+                insertNode(node.left, newNode);
+              }
+            } else {
+              if (node.right === null) {
+                node.right = newNode;
+              } else {
+                insertNode(node.right, newNode);
+              }
+            }
+          };
+          if (!this.root) {
+            this.root = newNode;
+          } else {
+            insertNode(this.root, newNode);
+          }
+        }
+
+        // 中序遍历，一种上行顺序访问bst所有节点的方式，从最到最大的顺序访问
+        // 左侧子节点=》节点本身=》右侧子节点
+        inOrderTraverse(callback) {
+          const inOrderTraverseNode = (node, callback) => {
+            if (node !== null) {
+              inOrderTraverseNode(node.left, callback);
+              callback(node.key);
+              inOrderTraverseNode(node.right, callback);
+            }
+          };
+          inOrderTraverseNode(this.root, callback);
+        }
+
+        // 先序遍历，以优先于后代节点的顺序从左向右遍历访问
+        // 节点本身=》左侧子节点=》右侧子节点
+        preOrderTraverse(callback) {
+          const preOrderTraverseNode = (node, callback) => {
+            if (node !== null) {
+              callback(node.key);
+              preOrderTraverseNode(node.left);
+              preOrderTraverseNode(node.right);
+            }
+          };
+          preOrderTraverseNode(this.root, callback);
+        }
+
+        // 后序遍历，从左向右，从下往上遍历节点的方式
+        // 左侧子节点=》右侧子节点=》节点本身
+        postOrderTraverse(callback) {
+          const postOrderTraverseNode = (node, callback) => {
+            if (node !== null) {
+              postOrderTraverseNode(node.left);
+              postOrderTraverseNode(node.right);
+              callback(node.key);
+            }
+          };
+          postOrderTraverseNode(this.root, callback);
+        }
+
+        search(key) {
+          const searchNode = (node, key) => {
+            if (node === null) {
+              return null;
+            }
+            if (key === node.key) {
+              return node;
+            }
+            return searchNode(key < node.key ? node.left : node.right, key);
+          };
+          return searchNode(this.root, key);
+        }
+
+        // 最小值
+        get min() {
+          const getMin = node => {
+            return node ? (node.left ? getMin(node.left) : node.key) : null;
+          };
+          return getMin(this.root);
+        }
+        // 最大值
+        get max() {
+          const getMax = node => {
+            return node ? (node.right ? getMax(node.right) : node.key) : null;
+          };
+          return getMax(this.root);
         }
       }
     </script>
