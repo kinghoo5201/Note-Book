@@ -574,6 +574,24 @@
           }
         }
 
+        remove(key) {
+          let parent = null;
+          const removeNode = (node, key) => {
+            if (node === null) {
+              return false;
+            }
+            if (node.key === key) {
+              const _node = node;
+              parent[parent.key > key ? "left" : "right"] = null;
+              return _node;
+            } else {
+              parent = node;
+              return removeNode(node.key > key ? node.left : node.right, key);
+            }
+          };
+          return removeNode(this.root, key);
+        }
+
         // 中序遍历，一种上行顺序访问bst所有节点的方式，从最到最大的顺序访问
         // 左侧子节点=》节点本身=》右侧子节点
         inOrderTraverse(callback) {
