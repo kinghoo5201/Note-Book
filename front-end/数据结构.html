@@ -586,9 +586,7 @@
               return false;
             }
             if (node.key === key) {
-              const _node = node;
-              parent[parent.key > key ? "left" : "right"] = null;
-              return _node;
+              //
             } else {
               parent = node;
               return removeNode(node.key > key ? node.left : node.right, key);
