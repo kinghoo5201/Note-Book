@@ -543,8 +543,13 @@
           }
         };
 
-        constructor() {
+        constructor(data) {
           this.root = null;
+          if (data) {
+            for (const key of data) {
+              this.insert(key);
+            }
+          }
         }
 
         insert(key) {
