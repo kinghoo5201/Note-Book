@@ -693,6 +693,58 @@
           return BinarySearchTree.getMaxNode(this.root).key;
         }
       }
+
+      /** 图数组版 */
+      class Graph {
+        constructor() {
+          this.vertices = [];
+          this.adjList = new Dictionary();
+        }
+
+        addVertex(v) {
+          this.vertices.push(v);
+          this.adjList.set(v, []);
+        }
+
+        addEdge(v, w) {
+          this.adjList.get(v).push(w);
+          this.adjList.get(w).push(v);
+        }
+
+        toString() {
+          return this.vertices.reduce((r, v) => {
+            return this.adjList.get(v).reduce((sR, w) => {
+              return `${sR}${w} `;
+            }, `${r}\n${v}=> `);
+          }, "");
+        }
+      }
+
+      /** 图set版 */
+      class GraphSet {
+        constructor() {
+          this.vertices = new Cset();
+          this.adjList = new Dictionary();
+        }
+
+        addVertex(v) {
+          this.vertices.add(v);
+          this.adjList.set(v, new Cset());
+        }
+
+        addEdge(v, w) {
+          this.adjList.get(v).add(w);
+          this.adjList.get(w).add(v);
+        }
+
+        toString() {
+          return this.vertices.values.reduce((r, v) => {
+            return this.adjList.get(v).values.reduce((sR, w) => {
+              return sR + w + " ";
+            }, `${r}\n${v}=> `);
+          }, "");
+        }
+      }
     </script>
   </body>
 </html>
