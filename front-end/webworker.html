@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+  </head>
+  <body>
+    <script>
+      class WorkerCreater {
+        constructor(func, receiver) {
+          if (func instanceof Worker) {
+            this.worker = func;
+          } else if (typeof func === 'string' && func.endsWith('.js')) {
+            this.worker = new Worker(func);
+          } else {
+            const code = [
+              `self.func = ${func.toString()};
+               self.onmessage = async (e) => {
+                const r =await self.func(e.data);
+                self.postMessage(r);
+              };`,
+            ];
+            const blob = new Blob(code, { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            this.worker = new Worker(url);
+          }
+          if (receiver) {
+            this.__receiveMessage(receiver);
+          }
+        }
+        postMessage(message) {
+          if (this.worker) {
+            this.worker.postMessage(message);
+          }
+        }
+        /** 只能注册一个接收信息的函数，其他可以通过addEventListener */
+        __receiveMessage(fn) {
+          if (!this.receiveMessageFn && this.worker) {
+            this.receiveMessageFn = function (e) {
+              fn(e.data);
+            };
+            this.worker.addEventListener('message', this.receiveMessageFn);
+          }
+        }
+        destroy() {
+          if (this.worker) {
+            if (this.receiveMessageFn) {
+              this.worker.removeEventListener('message', this.receiveMessageFn);
+            }
+            this.worker.terminate();
+          }
+        }
+      }
+      const work = new WorkerCreater(
+        function async(data) {
+          return data;
+        },
+        (data) => console.log(data),
+      );
+    </script>
+  </body>
+</html>
